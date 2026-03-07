@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  --background: #6977b6;
+  --foreground: #111111;
+  --border: #e5e5e5;
+  --primary: #111111;          /* current button outline color */
+  --primary-bg: #111111;       /* button background */
+  --primary-text: #ffffff;     /* button text */
+  --muted-foreground: #6b7280;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-muted-foreground: var(--muted-foreground);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
