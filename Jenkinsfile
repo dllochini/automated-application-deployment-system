@@ -9,8 +9,6 @@ pipeline {
     string(name: 'FRAMEWORK')
   }
 
-  
-
   environment {
     // Image and container names (per-project)
     IMAGE_NAME    = "app-${PORT}"
@@ -42,18 +40,22 @@ pipeline {
       }
     }
 
-    stage('Write .env') {
-      steps {
-        // Write the ENV parameter content to a .env file in the repo root
-        script {
-          // `params.ENV` is the multi-line env text sent from the platform
-          sh """
-            echo "${params.ENV}" | tr -d '\\r' | base64 -d > .env
-          """
-          echo ".env written (length: ${params.ENV?.length() ?: 0})"
-        }
+    stage('Write .env (optional)') {
+  steps {
+    script {
+      if (params.ENV && params.ENV.trim() != "" && params.ENV != "null") {
+        sh """
+          echo "${params.ENV}" | tr -d '\\r' | base64 -d > .env
+        """
+        env.HAS_ENV_FILE = "true"
+        echo ".env file created"
+      } else {
+        env.HAS_ENV_FILE = "false"
+        echo "No environment variables provided. Skipping .env creation."
       }
     }
+  }
+}
 
     stage('Detect container internal port') {
       steps {
@@ -121,24 +123,27 @@ pipeline {
     }
 
     stage('Run container') {
-      steps {
-        script {
-          // Run container, map host PORT to internal CONTAINER_PORT, capture container id
-          def containerId = sh(script: """
-            set -o pipefail
-            docker run -d \\
-              -p ${params.PORT}:${env.CONTAINER_PORT} \\
-              --env-file .env \\
-              --name ${CONTAINER_NAME} \\
-              ${IMAGE_NAME}
-          """, returnStdout: true).trim()
+  steps {
+    script {
 
-          // store for later stages
-          env.CONTAINER_ID = containerId
-          echo "Started container: ${containerId}"
-        }
+      def envOption = ""
+      if (env.HAS_ENV_FILE == "true") {
+        envOption = "--env-file .env"
       }
+
+      def containerId = sh(script: """
+        docker run -d \\
+          --restart unless-stopped \\
+          -p ${params.PORT}:${env.CONTAINER_PORT} \\
+          ${envOption} \\
+          --name ${CONTAINER_NAME} \\
+          ${IMAGE_NAME}
+      """, returnStdout: true).trim()
+
+      env.CONTAINER_ID = containerId
     }
+  }
+}
 
     stage('Notify platform') {
       steps {
