@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [message, setMessage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [output, setOutput] = useState(null)
+  const [hasEnv, setHasEnv] = useState(false)
 
   const frameworks = [
     { id: "react", label: "React" },
@@ -28,8 +29,9 @@ export default function Dashboard() {
   ]
 
   const isRepoValid = repo.trim().length > 0 && /^(https:\/\/|git@)?[\w.-]+(:|\/)?[\w-]+\/[\w.-]+(\.git)?$/.test(repo.trim())
-  const isEnvValid = env.trim().length > 0
-  const isFormValid = isRepoValid && framework && isEnvValid
+  const isEnvValid = hasEnv ? env.trim().length > 0 : true
+  const isFrameworkValid = framework !== ""
+  const isFormValid = isRepoValid && isFrameworkValid && isEnvValid
 
   async function handleDeploy(e) {
     e?.preventDefault()
@@ -46,7 +48,11 @@ export default function Dashboard() {
       const res = await fetch("/api/deploy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl: repo.trim(), framework, env }),
+        body: JSON.stringify({
+          repoUrl: repo.trim(),
+          framework,
+          env: hasEnv ? env : null
+        }),
       })
       const json = await res.json()
 
@@ -116,16 +122,33 @@ export default function Dashboard() {
           </div>
 
           <div>
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="checkbox"
+                checked={hasEnv}
+                onChange={(e) => {
+                  setHasEnv(e.target.checked)
+                  if (!e.target.checked) setEnv("")
+                }}
+              />
+              <label className="text-sm">This project requires environment variables</label>
+            </div>
+
             <label className="block text-sm mb-1">Environment Variables</label>
+
             <textarea
               value={env}
               onChange={(e) => setEnv(e.target.value)}
               rows={6}
+              disabled={!hasEnv}
               placeholder={`API_KEY=123\nDATABASE_URL=postgres://...`}
-              className="w-full px-3 py-2 rounded-md border border-white/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full px-3 py-2 rounded-md border border-white/20 bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50"
             />
-            {!isEnvValid && env && (
-              <p className="text-rose-300 text-xs mt-1">Environment variables cannot be empty</p>
+
+            {hasEnv && !isEnvValid && (
+              <p className="text-rose-300 text-xs mt-1">
+                Environment variables cannot be empty
+              </p>
             )}
           </div>
 
