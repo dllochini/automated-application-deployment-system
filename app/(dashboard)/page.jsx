@@ -20,12 +20,19 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [output, setOutput] = useState(null)
   const [hasEnv, setHasEnv] = useState(false)
+  const [database, setDatabase] = useState("none")
 
   const frameworks = [
     { id: "react", label: "React" },
     { id: "express", label: "Express.js" },
     { id: "fastapi", label: "FastAPI" },
     { id: "springboot", label: "Spring Boot" },
+  ]
+
+  const databases = [
+    { id: "none", label: "None" },
+    { id: "postgresql", label: "PostgreSQL" },
+    { id: "mysql", label: "MySQL" },
   ]
 
   const isRepoValid = repo.trim().length > 0 && /^(https:\/\/|git@)?[\w.-]+(:|\/)?[\w-]+\/[\w.-]+(\.git)?$/.test(repo.trim())
@@ -51,7 +58,8 @@ export default function Dashboard() {
         body: JSON.stringify({
           repoUrl: repo.trim(),
           framework,
-          env: hasEnv ? env : null
+          env: hasEnv ? env : null,
+          database,
         }),
       })
       const json = await res.json()
@@ -119,6 +127,28 @@ export default function Dashboard() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+          </div>
+
+          <div className="w-[180px]">
+            <label className="block text-sm mb-1">Database</label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full text-left h-10">
+                  {database ? databases.find(d => d.id === database)?.label : "Select a database"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[180px] bg-white/90 text-black">
+                <DropdownMenuLabel>Select Database</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  {databases.map(d => (
+                    <DropdownMenuItem key={d.id} onClick={() => setDatabase(d.id)}>{d.label}</DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <p className="text-xs text-slate-300 mt-1">
+              Choose a database for your project. Select "None" if no database is needed.
+            </p>
           </div>
 
           <div>
