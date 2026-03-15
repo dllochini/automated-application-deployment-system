@@ -1,5 +1,5 @@
 # /opt/dockerfiles/springboot.Dockerfile
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
