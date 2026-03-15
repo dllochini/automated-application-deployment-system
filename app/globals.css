@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #6977b6;
-  --foreground: #111111;
-  --border: #e5e5e5;
-  --primary: #111111;          /* current button outline color */
-  --primary-bg: #111111;       /* button background */
-  --primary-text: #ffffff;     /* button text */
-  --muted-foreground: #6b7280;
+  --background: #0f172a;        /* dark blue background */
+  --foreground: #f8fafc;        /* main text */
+
+  --border: #334155;
+
+  --primary: #6366f1;           /* indigo button */
+  --primary-bg: #6366f1;
+  --primary-text: #ffffff;
+
+  --muted-foreground: #94a3b8;
 }
 
 @theme inline {
