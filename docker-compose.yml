@@ -1,14 +1,15 @@
-version: "3.9"
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL}
     container_name: nextjs-app
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: ${DATABASE_URL}   # Neon connection string
+      DATABASE_URL: ${DATABASE_URL}
       NODE_ENV: production
     restart: unless-stopped
     depends_on:

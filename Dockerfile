@@ -25,6 +25,8 @@ COPY --from=builder /app/node_modules ./node_modules
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
 
 EXPOSE 3000
 CMD ["node", "node_modules/.bin/next", "start"]
