@@ -51,11 +51,11 @@ The system follows an automated deployment workflow integrated with DevOps tools
 
 ### Frameworks
 
-* React
+* React 
 * Express.js
 * Spring Boot
 * FastAPI
-* Next.js
+* Next.js (for UI)
 
 ### DevOps Tools
 
@@ -65,11 +65,12 @@ The system follows an automated deployment workflow integrated with DevOps tools
 
 ### Database
 
-* PostgreSQL (Neon)
-
+* PostgreSQL 
+<!-- (Neon) -->
+<!-- 
 ### ORM
 
-* Drizzle ORM
+* Drizzle ORM -->
 
 ### Other Tools
 
@@ -153,15 +154,7 @@ Example:
 
 ---
 
-# Dataset
-
-Not applicable for this project.
-
-This system focuses on deployment automation and does not rely on external datasets.
-
----
-
-# Project Structure
+<!-- # Project Structure
 
 ```
 project-root
@@ -181,9 +174,9 @@ project-root
 └── README.md              # Project documentation
 ```
 
----
+--- -->
 
-# Screenshots / Demo
+<!-- # Screenshots / Demo
 
 ### System Interface
 
@@ -200,23 +193,23 @@ project-root
 Demo video:
 (Add link if available)
 
----
+--- -->
 
 # Contributors
 
 | Name          | Role                                        |
 | ------------- | ------------------------------------------- |
-| Team Member 1 | Linux server setup and Spring Boot pipeline |
-| Team Member 2 | UI development and React pipeline           |
-| Team Member 3 | FastAPI deployment pipeline                 |
-| Team Member 4 | Express.js deployment pipeline              |
+| K. A. S. P. Dilhara | Linux server setup and Spring Boot pipeline |
+| D. L. L. Dikkumbura | UI development and React pipeline           |
+| A.G.C.D.P.Vithanagamage | Express.js deployment pipeline                 |
+| T. Adsajan | FastAPI deployment pipeline              |
 
 ---
 
 # Contact Information
 
-**Name:** Your Name
-**Email:** [your-email@example.com](mailto:your-email@example.com)
+**Name:** D. L. L. Dikkumbura 
+**Email:** [2021sp015@univ.jfn.ac.lk](mailto:2021sp015@univ.jfn.ac.lk)
 **Institution:** University of Jaffna
 
 ---
