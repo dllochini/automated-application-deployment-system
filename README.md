@@ -1,7 +1,3 @@
-Below is a **well-structured README.md** you can directly put in your repository. It follows all the sections your LMS requires and keeps the explanations clear but not too long.
-
----
-
 # Automated Application Deployment System
 
 ## Project Description
@@ -230,5 +226,3 @@ Demo video:
 This project is licensed under the **MIT License**.
 
 ---
-
-If you want, I can also help you **improve this README to look very professional on GitHub (with badges, architecture diagram, and cleaner sections)** — that usually gives **extra marks from lecturers**.
