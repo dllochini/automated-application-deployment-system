@@ -20,7 +20,7 @@ export async function POST(req) {
       .values({
         repo_url: repoUrl,
         framework: framework || "nextjs",
-        env: JSON.stringify(env), // <-- ensure JSON string
+        env: env,// <-- ensure JSON string
         status: "deploying",
         database: database || "none",
       })
