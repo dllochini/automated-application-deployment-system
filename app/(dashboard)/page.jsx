@@ -70,6 +70,8 @@ export default function Dashboard() {
 
     try {
 
+      console.log('post method in dashboard!!')
+
       const res = await fetch("/api/deploy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -86,6 +88,7 @@ export default function Dashboard() {
 
       if (json.success) {
 
+        console.log('json success')
         setOutput({
           port: json.port,
           url: json.url
@@ -97,6 +100,7 @@ export default function Dashboard() {
         })
 
       } else {
+        console.log('error1')
 
         setMessage({
           type: "error",
@@ -105,7 +109,7 @@ export default function Dashboard() {
       }
 
     } catch (err) {
-
+console.log('error2')
       setMessage({
         type: "error",
         text: `Error: ${err.message}`
