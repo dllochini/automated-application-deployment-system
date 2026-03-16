@@ -1,407 +1,234 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Below is a **well-structured README.md** you can directly put in your repository. It follows all the sections your LMS requires and keeps the explanations clear but not too long.
 
-## Getting Started
+---
 
-First, run the development server:
+# Automated Application Deployment System
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Project Description
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Modern web applications are built using various frameworks and technologies, which makes deployment a complex and time-consuming process. Developers often need to manually configure servers, install dependencies, set environment variables, build applications, and configure routing before making an application accessible online. When multiple frameworks such as React, Express.js, Spring Boot, and FastAPI are involved, the deployment process becomes even more complicated due to differences in build and runtime configurations.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+The **Automated Application Deployment System** is designed to simplify and automate this process. The platform provides a centralized web interface where developers can submit deployment details such as the Git repository link, application framework, database configuration, and environment variables. Once submitted, the system automatically triggers the appropriate deployment pipeline to build and deploy the application.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The main objective of this system is to reduce manual configuration effort, minimize deployment errors, and enable faster and more reliable application deployment.
 
-## Learn More
+**Target Users**
 
-To learn more about Next.js, take a look at the following resources:
+* Developers who want to quickly deploy applications
+* Students working on web development projects
+* Teams managing multiple applications and frameworks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# System Architecture / Design
 
-## Deploy on Vercel
+The system follows an automated deployment workflow integrated with DevOps tools.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Workflow
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. User submits deployment details through the web interface.
+2. System stores deployment data in the database.
+3. Based on the selected framework, the system triggers the appropriate Jenkins pipeline.
+4. Jenkins retrieves the source code from the provided Git repository.
+5. The application is built and containerized using Docker.
+6. Traefik dynamically routes the deployed service.
+7. A public URL is generated and displayed to the user.
 
+### Main Components
 
-# Deployment Platform Setup (Linux Server)
+* **Frontend Interface** – Next.js application for submitting deployment requests.
+* **Backend Server** – Handles deployment requests and system logic.
+* **Database** – Stores deployment details and system information.
+* **CI/CD Pipeline** – Jenkins manages automated deployment pipelines.
+* **Containerization** – Docker ensures consistent runtime environments.
+* **Reverse Proxy** – Traefik handles routing and exposes deployed applications.
 
-This guide explains how to set up the deployment platform on a Linux server.
-The platform automatically deploys applications from Git repositories using **Jenkins + Docker**.
+---
 
-Supported frameworks:
+# Technologies Used
+
+### Programming Languages
+
+* JavaScript / TypeScript
+* Python
+* Java
+
+### Frameworks
 
 * React
 * Express.js
-* FastAPI
 * Spring Boot
+* FastAPI
+* Next.js
+
+### DevOps Tools
+
+* Jenkins
+* Docker
+* Traefik
+
+### Database
+
+* PostgreSQL (Neon)
+
+### ORM
+
+* Drizzle ORM
+
+### Other Tools
+
+* Git / GitHub
+* Linux Live Server
 
 ---
 
-# 1. Server Requirements
+# Installation Instructions
 
-Recommended server:
+### Requirements
 
-* Ubuntu 22.04 / Debian based Linux
-* 4GB RAM minimum
-* 20GB disk
-
-Install basic tools:
-
-```bash
-sudo apt update
-sudo apt install -y git curl
-```
-
----
-
-# 2. Install Docker
-
-Install Docker on the server.
-
-```bash
-sudo apt install -y docker.io
-sudo systemctl enable docker
-sudo systemctl start docker
-```
-
-Allow Jenkins to use Docker:
-
-```bash
-sudo usermod -aG docker jenkins
-```
-
-Verify Docker:
-
-```bash
-docker --version
-```
-
----
-
-# 3. Install Jenkins
-
-Install Jenkins:
-
-```bash
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
-  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-
-echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
-  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
-
-sudo apt update
-sudo apt install jenkins -y
-```
-
-Start Jenkins:
-
-```bash
-sudo systemctl start jenkins
-sudo systemctl enable jenkins
-```
-
-Open Jenkins in browser:
-
-```
-http://SERVER_IP:8080
-```
-
-Get initial admin password:
-
-```bash
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-```
-
----
-
-# 4. Install Required Jenkins Plugins
-
-Inside Jenkins install:
-
-* Pipeline
+* Linux server
+* Docker
+* Jenkins
+* Node.js
 * Git
-* Docker Pipeline
-* Credentials Binding
-* AnsiColor
+* PostgreSQL database
 
-Restart Jenkins after installing plugins.
+### Installation Steps
 
----
-
-# 5. Configure Jenkins Environment Variables
-
-In Jenkins:
+1. Clone the repository
 
 ```
-Manage Jenkins
-→ Configure System
-→ Global Properties
-→ Environment Variables
+git clone https://github.com/your-repository-link.git
 ```
 
-Add:
+2. Navigate to the project directory
 
 ```
-PLATFORM_HOST=YOUR_SERVER_IP
+cd project-folder
 ```
 
-Example:
+3. Install dependencies
 
 ```
-PLATFORM_HOST=192.168.56.101
-```
-
----
-
-# 6. Create Dockerfile Templates
-
-Create a directory:
-
-```bash
-sudo mkdir -p /opt/dockerfiles
-```
-
-Add Dockerfiles for each framework.
-
-Example:
-
-```
-/opt/dockerfiles
-  ├── react.Dockerfile
-  ├── express.Dockerfile
-  ├── fastapi.Dockerfile
-  └── springboot.Dockerfile
-```
-
-These templates are used by Jenkins to build containers.
-
----
-
-# 7. Create Jenkins Pipeline Job
-
-In Jenkins:
-
-```
-New Item
-→ Pipeline
-→ Name: deploy-app
-```
-
-Enable:
-
-```
-This project is parameterized
-```
-
-Add parameters:
-
-```
-REPO (string)
-PORT (string)
-PROJECT_ID (string)
-ENV (text)
-FRAMEWORK (string)
-```
-
-Paste the provided **Jenkinsfile pipeline script** in:
-
-```
-Pipeline → Pipeline script
-```
-
-Save the job.
-
----
-
-# 8. Deploy the Platform Application
-
-Clone the deployment platform repository.
-
-```bash
-git clone https://github.com/YOUR_ORG/deployment-platform.git
-cd deployment-platform
-```
-
-Install dependencies:
-
-```bash
 npm install
 ```
 
-Configure environment variables:
+4. Configure environment variables
+
+Create a `.env` file and configure required variables such as:
 
 ```
-.env
+DATABASE_URL=
+JENKINS_URL=
+JENKINS_API_TOKEN=
 ```
+
+5. Start the application
+
+```
+npm run dev
+```
+
+---
+
+# Usage Instructions
+
+1. Open the web interface in the browser.
+2. Fill in the deployment form:
+
+   * Git repository URL
+   * Framework type (React / Express / Spring Boot / FastAPI)
+   * Database configuration
+   * Environment variables (if required)
+3. Submit the deployment request.
+4. The system triggers the automated deployment pipeline.
+5. Once deployment is completed, the system generates a public URL for the application.
 
 Example:
 
+**Input**
+
+* Repository: `https://github.com/example/project`
+* Framework: React
+
+**Output**
+
+* Deployed URL: `https://project.example.domain`
+
+---
+
+# Dataset
+
+Not applicable for this project.
+
+This system focuses on deployment automation and does not rely on external datasets.
+
+---
+
+# Project Structure
+
 ```
-DATABASE_URL=postgresql://user:password@localhost:5432/deploydb
-
-JENKINS_URL=http://SERVER_IP:8080
-JENKINS_USER=admin
-JENKINS_TOKEN=YOUR_JENKINS_API_TOKEN
-JENKINS_JOB_NAME=deploy-app
-```
-
-Run the application:
-
-```bash
-npm run build
-npm start
+project-root
+│
+├── frontend/              # Next.js frontend interface
+│
+├── backend/               # Backend logic and API
+│
+├── pipelines/             # Jenkins pipeline configurations
+│
+├── docker/                # Docker configuration files
+│
+├── database/              # Database schema and migrations
+│
+├── docs/                  # Documentation and diagrams
+│
+└── README.md              # Project documentation
 ```
 
 ---
 
-# 9. Configure GitHub Webhook
+# Screenshots / Demo
 
-In the user's GitHub repository:
+### System Interface
 
-```
-Settings → Webhooks → Add webhook
-```
+(Add screenshots of your interface here)
 
-Payload URL:
+### Deployment Workflow
 
-```
-http://YOUR_SERVER/api/webhooks
-```
+(Add screenshots showing deployment pipeline)
 
-Content type:
+### Example Deployment Result
 
-```
-application/json
-```
+(Add screenshot showing generated application URL)
 
-Events:
-
-```
-Just the push event
-```
-
-Now every push will trigger a redeployment.
+Demo video:
+(Add link if available)
 
 ---
 
-# 10. Deployment Flow
+# Contributors
 
-When a user deploys a project:
-
-1. User submits repository URL to the platform
-2. Platform assigns a free port
-3. Platform sends a request to Jenkins
-4. Jenkins pipeline:
-
-   * clones repository
-   * selects correct Dockerfile
-   * builds Docker image
-   * runs container
-5. Application becomes available at:
-
-```
-http://SERVER_IP:PORT
-```
-
-Example:
-
-```
-http://192.168.56.101:3001
-```
+| Name          | Role                                        |
+| ------------- | ------------------------------------------- |
+| Team Member 1 | Linux server setup and Spring Boot pipeline |
+| Team Member 2 | UI development and React pipeline           |
+| Team Member 3 | FastAPI deployment pipeline                 |
+| Team Member 4 | Express.js deployment pipeline              |
 
 ---
 
-# 11. Managing Running Containers
+# Contact Information
 
-List running apps:
-
-```bash
-docker ps
-```
-
-Stop container:
-
-```bash
-docker stop CONTAINER_ID
-```
-
-Remove container:
-
-```bash
-docker rm CONTAINER_ID
-```
+**Name:** Your Name
+**Email:** [your-email@example.com](mailto:your-email@example.com)
+**Institution:** University of Jaffna
 
 ---
 
-# 12. Troubleshooting
+# Licence
 
-### Jenkins cannot run Docker
-
-Restart Jenkins after adding docker group:
-
-```bash
-sudo systemctl restart jenkins
-```
-
-### Container port already in use
-
-Check used ports:
-
-```bash
-sudo lsof -i -P -n | grep LISTEN
-```
-
-### Pipeline build failed
-
-Check logs in:
-
-```
-Jenkins → Build → Console Output
-```
+This project is licensed under the **MIT License**.
 
 ---
 
-# 13. Security Notes
-
-Recommended improvements for production:
-
-* Add HTTPS using Nginx
-* Use a firewall
-* Store secrets using Jenkins Credentials
-* Verify GitHub webhook signatures
-
----
-
-# 14. Summary
-
-This platform provides a simple **mini PaaS** where:
-
-* Developers push code to Git
-* Jenkins builds Docker images
-* Containers run automatically
-* Apps become available via assigned ports
-
-Supported frameworks:
-
-* React
-* Express
-* FastAPI
-* Spring Boot
-
----
-
-END
+If you want, I can also help you **improve this README to look very professional on GitHub (with badges, architecture diagram, and cleaner sections)** — that usually gives **extra marks from lecturers**.
