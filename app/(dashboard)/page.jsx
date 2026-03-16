@@ -33,6 +33,8 @@ export default function Dashboard() {
   const [output, setOutput] = useState(null)
   const [hasEnv, setHasEnv] = useState(false)
   const [database, setDatabase] = useState("none")
+  const [dbUser, setDbUser] = useState("")
+  const [dbPassword, setDbPassword] = useState("")
 
   const frameworks = [
     { id: "react", label: "React" },
@@ -53,7 +55,10 @@ export default function Dashboard() {
 
   const isEnvValid = hasEnv ? env.trim().length > 0 : true
   const isFrameworkValid = framework !== ""
-  const isFormValid = isRepoValid && isFrameworkValid && isEnvValid
+  const isDbConfigValid =
+    database === "none" || (dbUser.trim().length > 0 && dbPassword.trim().length > 0)
+
+  const isFormValid = isRepoValid && isFrameworkValid && isEnvValid && isDbConfigValid
 
   async function handleDeploy(e) {
 
@@ -81,6 +86,8 @@ export default function Dashboard() {
           framework,
           env: hasEnv ? env : null,
           database,
+          dbUser: database !== "none" ? dbUser : null,
+          dbPassword: database !== "none" ? dbPassword : null,
         }),
       })
 
@@ -109,7 +116,7 @@ export default function Dashboard() {
       }
 
     } catch (err) {
-console.log('error2')
+      console.log('error2')
       setMessage({
         type: "error",
         text: `Error: ${err.message}`
@@ -273,7 +280,13 @@ console.log('error2')
                     {databases.map((d) => (
                       <DropdownMenuItem
                         key={d.id}
-                        onClick={() => setDatabase(d.id)}
+                        onClick={() => {
+                          setDatabase(d.id)
+                          if (d.id === "none") {
+                            setDbUser("")
+                            setDbPassword("")
+                          }
+                        }}
                       >
                         {d.label}
                       </DropdownMenuItem>
@@ -287,6 +300,50 @@ console.log('error2')
             </div>
 
           </div>
+
+          {database !== "none" && (
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+
+              {/* DB USERNAME */}
+
+              <div>
+
+                <label className="text-sm mb-1 block">
+                  Database Username
+                </label>
+
+                <input
+                  value={dbUser}
+                  onChange={(e) => setDbUser(e.target.value)}
+                  placeholder="db_user"
+                  className="w-full px-3 py-2 rounded-md border border-white/20 bg-transparent focus:ring-2 focus:ring-indigo-400"
+                />
+
+              </div>
+
+
+              {/* DB PASSWORD */}
+
+              <div>
+
+                <label className="text-sm mb-1 block">
+                  Database Password
+                </label>
+
+                <input
+                  type="password"
+                  value={dbPassword}
+                  onChange={(e) => setDbPassword(e.target.value)}
+                  placeholder="db_password"
+                  className="w-full px-3 py-2 rounded-md border border-white/20 bg-transparent focus:ring-2 focus:ring-indigo-400"
+                />
+
+              </div>
+
+            </div>
+
+          )}
 
 
           {/* ENV VARIABLES */}
@@ -360,13 +417,12 @@ console.log('error2')
 
           {message && (
             <div
-              className={`p-2 rounded-md text-sm ${
-                message.type === "error"
-                  ? "bg-rose-900 text-rose-100"
-                  : message.type === "success"
+              className={`p-2 rounded-md text-sm ${message.type === "error"
+                ? "bg-rose-900 text-rose-100"
+                : message.type === "success"
                   ? "bg-emerald-900 text-emerald-100"
                   : "bg-white/20 text-white"
-              }`}
+                }`}
             >
               {message.text}
             </div>
