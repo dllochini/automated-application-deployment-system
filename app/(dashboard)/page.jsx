@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState } from "react"
+import { deployApp } from "@/services/apiService"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,19 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
 import { Button } from "@/components/ui/button"
-
-import {
-  Loader2,
-  Copy,
-  AlertCircle,
-  Github,
-  Database,
-  Code,
-  Key,
-  Rocket
-} from "lucide-react"
+import { Loader2, Copy, AlertCircle, Github, Database, Code, Key, Rocket } from "lucide-react"
 
 export default function Dashboard() {
 
@@ -52,81 +43,63 @@ export default function Dashboard() {
   const isRepoValid =
     repo.trim().length > 0 &&
     /^(https:\/\/|git@)?[\w.-]+(:|\/)?[\w-]+\/[\w.-]+(\.git)?$/.test(repo.trim())
-
   const isEnvValid = hasEnv ? env.trim().length > 0 : true
   const isFrameworkValid = framework !== ""
   const isDbConfigValid =
     database === "none" || (dbUser.trim().length > 0 && dbPassword.trim().length > 0)
-
   const isFormValid = isRepoValid && isFrameworkValid && isEnvValid && isDbConfigValid
 
   async function handleDeploy(e) {
-
-    e?.preventDefault()
+    e?.preventDefault();
 
     if (!isFormValid) {
-      setMessage({ type: "error", text: "Please fill all fields correctly before deploying." })
-      return
+      setMessage({ type: "error", text: "Please fill all fields correctly before deploying." });
+      return;
     }
 
-    setLoading(true)
-    setMessage({ type: "info", text: "Deployment started..." })
-    setOutput(null)
+    setLoading(true);
+    setMessage({ type: "info", text: "Deployment started..." });
+    setOutput(null);
 
     try {
+      const payload = {
+        repoUrl: repo.trim(),
+        framework,
+        env: hasEnv ? env : null,
+        database,
+        dbUser: database !== "none" ? dbUser : null,
+        dbPassword: database !== "none" ? dbPassword : null,
+      };
 
-      console.log('post method in dashboard!!')
-
-      const res = await fetch("/api/deploy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-
-        body: JSON.stringify({
-          repoUrl: repo.trim(),
-          framework,
-          env: hasEnv ? env : null,
-          database,
-          dbUser: database !== "none" ? dbUser : null,
-          dbPassword: database !== "none" ? dbPassword : null,
-        }),
-      })
-
-      const json = await res.json()
+      const res = await deployApp(payload);
+      const json = res.data;
 
       if (json.success) {
-
-        console.log('json success')
         setOutput({
           port: json.port,
-          url: json.url
-        })
+          url: json.url,
+        });
 
         setMessage({
           type: "success",
-          text: `Deployment completed on port ${json.port}`
-        })
-
+          text: `Deployment completed on port ${json.port}`,
+        });
       } else {
-        console.log('error1')
-
         setMessage({
           type: "error",
-          text: json.error || "Unknown deployment error"
-        })
+          text: json.error || "Unknown deployment error",
+        });
       }
 
     } catch (err) {
-      console.log('error2')
       setMessage({
         type: "error",
-        text: `Error: ${err.message}`
-      })
-
+        text: err.response?.data?.error || err.message,
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
-
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text)
     setMessage({ type: "success", text: "Copied to clipboard" })
@@ -150,13 +123,12 @@ export default function Dashboard() {
           </p>
         </div>
 
-
         <form
           onSubmit={handleDeploy}
           className="space-y-6 bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20"
         >
 
-          {/* PROJECT SOURCE */}
+          {/* Project Source */}
 
           <div className="space-y-4">
 
@@ -189,7 +161,6 @@ export default function Dashboard() {
                 )}
 
               </div>
-
 
               {/* Framework */}
 
@@ -234,7 +205,6 @@ export default function Dashboard() {
 
           </div>
 
-
           {/* INFRASTRUCTURE */}
 
           <div className="space-y-4">
@@ -243,7 +213,6 @@ export default function Dashboard() {
               <Database size={18} />
               Infrastructure
             </h2>
-
 
             <div className="space-y-2">
 
@@ -260,7 +229,6 @@ export default function Dashboard() {
 
               </div>
 
-
               <DropdownMenu>
 
                 <DropdownMenuTrigger asChild>
@@ -270,7 +238,6 @@ export default function Dashboard() {
                   </Button>
 
                 </DropdownMenuTrigger>
-
 
                 <DropdownMenuContent className="w-[200px] bg-white/90 text-black">
 
@@ -322,7 +289,6 @@ export default function Dashboard() {
 
               </div>
 
-
               {/* DB PASSWORD */}
 
               <div>
@@ -344,7 +310,6 @@ export default function Dashboard() {
             </div>
 
           )}
-
 
           {/* ENV VARIABLES */}
 
@@ -389,7 +354,6 @@ export default function Dashboard() {
 
           </div>
 
-
           {/* DEPLOY BUTTON */}
 
           <Button
@@ -412,7 +376,6 @@ export default function Dashboard() {
 
           </Button>
 
-
           {/* MESSAGE */}
 
           {message && (
@@ -427,7 +390,6 @@ export default function Dashboard() {
               {message.text}
             </div>
           )}
-
 
           {/* RESULT CARD */}
 
