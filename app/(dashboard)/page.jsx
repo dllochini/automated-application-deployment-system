@@ -76,13 +76,13 @@ export default function Dashboard() {
 
       if (json.success) {
         setOutput({
-          port: json.port,
+          // port: json.port,
           url: json.url,
         });
 
         setMessage({
           type: "success",
-          text: `Deployment completed on port ${json.port}`,
+          text: `Website can be accessed via ${url}`,
         });
       } else {
         setMessage({
@@ -400,10 +400,6 @@ export default function Dashboard() {
               <h3 className="font-semibold text-lg">
                 Deployment Successful 🎉
               </h3>
-
-              <p>
-                <strong>Port:</strong> {output.port}
-              </p>
 
               <div className="flex items-center gap-2">
 
