@@ -2,10 +2,6 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Pass build-time environment variable
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
 # Install dependencies
 COPY package*.json ./
 RUN npm install
@@ -23,13 +19,11 @@ WORKDIR /app
 # Copy only necessary files
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
-#COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
 # Set environment variables for runtime
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV DATABASE_URL=$DATABASE_URL
 
 EXPOSE 3000
 CMD ["node", "node_modules/.bin/next", "start"]
