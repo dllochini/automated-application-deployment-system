@@ -31,7 +31,8 @@ export default function Dashboard() {
     { id: "react", label: "React" },
     { id: "express", label: "Express.js" },
     { id: "fastapi", label: "FastAPI" },
-    { id: "springboot", label: "Spring Boot" },
+    { id: "spring", label: "Spring Boot" },
+    { id: "next", label: "Next.js" },
   ]
 
   const databases = [
