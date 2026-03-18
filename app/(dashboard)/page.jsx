@@ -49,57 +49,80 @@ export default function Dashboard() {
     database === "none" || (dbUser.trim().length > 0 && dbPassword.trim().length > 0)
   const isFormValid = isRepoValid && isFrameworkValid && isEnvValid && isDbConfigValid
 
+  function parseEnv(envText = "") {
+  return Object.fromEntries(
+    envText
+      .split("\n")
+      .map(line => line.trim())
+      .filter(line => line && line.includes("="))
+      .map(line => {
+        const [key, ...rest] = line.split("=");
+        return [key.trim(), rest.join("=").trim()];
+      })
+  );
+}
+  
   async function handleDeploy(e) {
-    e?.preventDefault();
+  e?.preventDefault();
 
-    if (!isFormValid) {
-      setMessage({ type: "error", text: "Please fill all fields correctly before deploying." });
-      return;
-    }
+  if (!isFormValid) {
+    setMessage({ type: "error", text: "Please fill all fields correctly before deploying." });
+    return;
+  }
 
-    setLoading(true);
-    setMessage({ type: "info", text: "Deployment started..." });
-    setOutput(null);
+  setLoading(true);
+  setMessage({ type: "info", text: "Deployment started..." });
+  setOutput(null);
 
-    try {
-      const payload = {
-        repoUrl: repo.trim(),
-        framework,
-        env: hasEnv ? env : null,
-        database,
-        dbUser: database !== "none" ? dbUser : null,
-        dbPassword: database !== "none" ? dbPassword : null,
-      };
+  try {
+    // normalize framework -> backend expects "spring" not "springboot"
+    const normalizedFramework = framework === "springboot" ? "spring" : framework;
 
-      const res = await deployApp(payload);
-      const json = res.data;
+    // normalize dbType casing to match backend
+    const dbTypeNormalized =
+      database === "postgresql" ? "PostgreSQL" :
+      database === "mysql" ? "MySQL" :
+      null;
 
-      if (json.success) {
-        setOutput({
-          // port: json.port,
-          url: json.url,
-        });
+    const payload = {
+      repoUrl: repo.trim(),
+      framework: normalizedFramework,
+      isDbInclude: database !== "none",
+      dbType: database !== "none" ? dbTypeNormalized : null,
+      dbUser: database !== "none" ? dbUser : null,
+      dbPassword: database !== "none" ? dbPassword : null,
+      env: hasEnv ? parseEnv(env) : null,
+    };
 
-        setMessage({
-          type: "success",
-          text: `Website can be accessed via ${url}`,
-        });
-      } else {
-        setMessage({
-          type: "error",
-          text: json.error || "Unknown deployment error",
-        });
-      }
+    const res = await deployApp(payload);
+    const json = res.data ?? {};
 
-    } catch (err) {
+    // success check: backend returns id when saved
+    if (json.id) {
+      const url = json.publicUrl || json.url || null;
+
+      setOutput({ url });
+
+      setMessage({
+        type: "success",
+        text: url ? `Website can be accessed via ${url}` : "Deployment created (no URL returned).",
+      });
+    } else {
       setMessage({
         type: "error",
-        text: err.response?.data?.error || err.message,
+        text: json.error || "Unknown deployment error",
       });
-    } finally {
-      setLoading(false);
     }
+  } catch (err) {
+    setMessage({
+      type: "error",
+      text: err.response?.data?.error || err.message || "Network error",
+    });
+  } finally {
+    setLoading(false);
   }
+}
+
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text)
     setMessage({ type: "success", text: "Copied to clipboard" })
